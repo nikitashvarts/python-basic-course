@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Task Form</title>
+</head>
+<body>
+{% if task %}
+    <h1>Update Task</h1>
+    <form action="/update_task/{{ task[0] }}" method="POST">
+{% else %}
+    <h1>Add Task</h1>
+    <form action="/add_task" method="POST">
+{% endif %}
+<label for="title">Title:</label><br>
+<input type="text" id="title" name="title" value="{% if task %}{{ task[1] }}{% endif %}" required><br><br>
+
+<label for="description">Description:</label><br>
+<textarea id="description" name="description" rows="4" cols="50">{% if task %}
+    {{ task[2] }}{% endif %}</textarea><br><br>
+
+<label for="deadline">Deadline:</label><br>
+<input type="date" id="deadline" name="deadline" value="{% if task %}{{ task[3] }}{% endif %}"><br><br>
+
+<label for="priority">Priority:</label><br>
+<select id="priority" name="priority">
+    <option value="LOW" {% if task and task[4] == 'LOW' %} selected {% endif %}>Low</option>
+    <option value="MEDIUM" {% if task and task[4] == 'MEDIUM' %} selected {% endif %}>Medium</option>
+    <option value="HIGH" {% if task and task[4] == 'HIGH' %} selected {% endif %}>High</option>
+</select><br><br>
+
+<input type="submit" value="{% if task %}Update Task{% else %}Add Task{% endif %}">
+</form>
+<br>
+<a href="/tasks">Back to Task List</a>
+</body>
+</html>

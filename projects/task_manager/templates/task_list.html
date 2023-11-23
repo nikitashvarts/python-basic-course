@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Task List</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='list_style.css') }}">
+</head>
+<body>
+<h1>Task List</h1>
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Deadline</th>
+        <th>Priority</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for task in tasks %}
+        <tr>
+            <td>{{ task[0] }}</td>
+            <td>{{ task[1] }}</td>
+            <td>{{ task[2] }}</td>
+            <td>{{ task[3] }}</td>
+            <td>{{ task[4] }}</td>
+            <td>
+                <form action="/update_task/{{ task[0] }}" method="GET">
+                    <button type="submit">Update</button>
+                </form>
+                <form action="/delete_task/{{ task[0] }}" method="POST"
+                      onsubmit="return confirm('Are you sure you want to delete this task?')">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<a href="/add_task">Add Task</a>
+</body>
+</html>

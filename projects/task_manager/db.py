@@ -1,6 +1,6 @@
 import sqlite3
 from enum import Enum, auto
-from flask import current_app
+from flask import current_app, g
 
 
 class TaskPriority(Enum):
@@ -46,6 +46,11 @@ class TaskManager:
         cursor.execute('SELECT * FROM tasks')
         return cursor.fetchall()
 
+    def get_task_by_id(self, task_id):
+        cursor = self.conn.cursor()
+        cursor.execute('SELECT * FROM tasks WHERE id = ?', (task_id,))
+        return cursor.fetchone()
+
     def update_task(self, task_id, title=None, description=None, deadline=None, priority=None):
         update_query = 'UPDATE tasks SET '
         updates = []
@@ -68,6 +73,12 @@ class TaskManager:
         cursor = self.conn.cursor()
         cursor.execute('DELETE FROM tasks WHERE id = ?', (task_id,))
         self.conn.commit()
+
+    @staticmethod
+    def get_instance():
+        if 'task_manager' not in g:
+            g.task_manager = TaskManager()
+        return g.task_manager
 
     @staticmethod
     def __validate_priority(priority):

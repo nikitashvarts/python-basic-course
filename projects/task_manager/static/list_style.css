@@ -1,14 +1,8 @@
 table {
-    width: 100%;
-    border-collapse: collapse;
+    table-layout: fixed;
 }
 
-th, td {
-    border: 1px solid #dddddd;
-    padding: 8px;
-    text-align: left;
-}
-
-th {
-    background-color: #f2f2f2;
+td {
+    white-space: normal !important;
+    word-wrap: break-word;
 }

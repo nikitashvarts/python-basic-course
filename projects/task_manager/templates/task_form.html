@@ -2,36 +2,57 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Task Form</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 </head>
 <body>
-{% if task %}
-    <h1>Update Task</h1>
-    <form action="/update_task/{{ task[0] }}" method="POST">
-{% else %}
-    <h1>Add Task</h1>
-    <form action="/add_task" method="POST">
-{% endif %}
-<label for="title">Title:</label><br>
-<input type="text" id="title" name="title" value="{% if task %}{{ task[1] }}{% endif %}" required><br><br>
+<div class="container">
+    {% if task %}
+        <h1 class="my-3">Update Task</h1>
+        <form action="/update_task/{{ task[0] }}" method="POST">
+    {% else %}
+        <h1 class="my-3">Add Task</h1>
+        <form action="/add_task" method="POST">
+    {% endif %}
 
-<label for="description">Description:</label><br>
-<textarea id="description" name="description" rows="4" cols="50">{% if task %}
-    {{ task[2] }}{% endif %}</textarea><br><br>
+    <div class="mb-3">
+        <label for="title" class="form-label">Title</label>
+        <input type="text" class="form-control" id="title" name="title"
+               value="{% if task %}{{ task[1] }}{% endif %}" required>
+    </div>
 
-<label for="deadline">Deadline:</label><br>
-<input type="date" id="deadline" name="deadline" value="{% if task %}{{ task[3] }}{% endif %}"><br><br>
+    <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea class="form-control" id="description" name="description"
+                  rows="4" cols="50">{% if task %}{{ task[2] }}{% endif %}</textarea>
+    </div>
 
-<label for="priority">Priority:</label><br>
-<select id="priority" name="priority">
-    <option value="LOW" {% if task and task[4] == 'LOW' %} selected {% endif %}>Low</option>
-    <option value="MEDIUM" {% if task and task[4] == 'MEDIUM' %} selected {% endif %}>Medium</option>
-    <option value="HIGH" {% if task and task[4] == 'HIGH' %} selected {% endif %}>High</option>
-</select><br><br>
+    <div class="mb-3">
+        <label for="deadline" class="form-label">Deadline</label>
+        <input type="date" class="form-control" id="deadline" name="deadline"
+               value="{% if task %}{{ task[3] }}{% endif %}">
+    </div>
 
-<input type="submit" value="{% if task %}Update Task{% else %}Add Task{% endif %}">
-</form>
-<br>
-<a href="/tasks">Back to Task List</a>
+    <div class="mb-3">
+        <label for="priority" class="form-label">Priority</label>
+        <select class="form-select" id="priority" name="priority">
+            <option value="LOW" {% if task and task[4] == 'LOW' %} selected {% endif %}>Low</option>
+            <option value="MEDIUM" {% if task and task[4] == 'MEDIUM' %} selected {% endif %}>Medium</option>
+            <option value="HIGH" {% if task and task[4] == 'HIGH' %} selected {% endif %}>High</option>
+        </select>
+    </div>
+
+    <div class="d-grid gap-2 d-md-block">
+        <input type="submit" class="btn btn-primary" value="{% if task %}Update Task{% else %}Add Task{% endif %}">
+        <a href="/tasks" class="btn btn-secondary">Back to Task List</a>
+    </div>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
 </body>
 </html>

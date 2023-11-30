@@ -59,19 +59,27 @@ class TaskManager:
     def update_task(self, task_id, title=None, description=None, deadline=None, priority=None):
         update_query = 'UPDATE tasks SET '
         updates = []
+        values = []
+
         if title:
-            updates.append(f'title = "{title}"')
+            updates.append('title = ?')
+            values.append(title)
         if description:
-            updates.append(f'description = "{description}"')
+            updates.append('description = ?')
+            values.append(description)
         if deadline:
-            updates.append(f'deadline = "{deadline}"')
+            updates.append('deadline = ?')
+            values.append(deadline)
         if priority:
             TaskManager.__validate_priority(priority)
-            updates.append(f'priority = "{priority.name}"')
+            updates.append('priority = ?')
+            values.append(priority.name)
 
-        update_query += ', '.join(updates) + f' WHERE id = {task_id}'
+        update_query += ', '.join(updates) + ' WHERE id = ?'
+        values.append(task_id)
+
         cursor = self.conn.cursor()
-        cursor.execute(update_query)
+        cursor.execute(update_query, values)
         self.conn.commit()
 
     def delete_task(self, task_id):

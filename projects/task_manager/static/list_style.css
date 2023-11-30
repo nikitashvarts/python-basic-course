@@ -1,0 +1,8 @@
+table {
+    table-layout: fixed;
+}
+
+td {
+    white-space: normal !important;
+    word-wrap: break-word;
+}

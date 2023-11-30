@@ -44,6 +44,12 @@
         </select>
     </div>
 
+    <div class="mb-3">
+        <label for="project" class="form-label">Project</label>
+        <input type="text" class="form-control" id="project" name="project"
+               value="{% if task %}{{ task[5] }}{% endif %}">
+    </div>
+
     <div class="d-grid gap-2 d-md-block">
         <input type="submit" class="btn btn-primary" value="{% if task %}Update Task{% else %}Add Task{% endif %}">
         <a href="/tasks" class="btn btn-secondary">Back to Task List</a>

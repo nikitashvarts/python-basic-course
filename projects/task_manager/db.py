@@ -26,29 +26,39 @@ class TaskManager:
                 title TEXT NOT NULL,
                 description TEXT,
                 deadline DATE,
-                priority TEXT CHECK(priority IN ('LOW', 'MEDIUM', 'HIGH'))
+                priority TEXT CHECK(priority IN ('LOW', 'MEDIUM', 'HIGH')),
+                project TEXT
             )
         ''')
         self.conn.commit()
 
-    def add_task(self, title, description, deadline, priority):
+    def add_task(self, title, description, deadline, priority, project):
         TaskManager.__validate_priority(priority)
 
         cursor = self.conn.cursor()
         cursor.execute('''
-            INSERT INTO tasks (title, description, deadline, priority)
-            VALUES (?, ?, ?, ?)
-        ''', (title, description, deadline, priority.name))
+            INSERT INTO tasks (title, description, deadline, priority, project)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (title, description, deadline, priority.name, project))
         self.conn.commit()
 
-    def get_tasks(self, sort_by, order):
+    def get_tasks(self, sort_by, order, project):
         if sort_by not in ('id', 'title', 'deadline', 'priority'):
             sort_by = 'id'
         if order not in ('ASC', 'DESC'):
             order = 'ASC'
 
+        query = ['SELECT * FROM tasks']
+        values = []
+
+        if project:
+            query.append('WHERE project = ?')
+            values.append(project)
+
+        query.append(f'ORDER BY {sort_by} {order}')
+
         cursor = self.conn.cursor()
-        cursor.execute(f'SELECT * FROM tasks ORDER BY {sort_by} {order}')
+        cursor.execute(' '.join(query), values)
         return cursor.fetchall()
 
     def get_task_by_id(self, task_id):
@@ -56,7 +66,7 @@ class TaskManager:
         cursor.execute('SELECT * FROM tasks WHERE id = ?', (task_id,))
         return cursor.fetchone()
 
-    def update_task(self, task_id, title=None, description=None, deadline=None, priority=None):
+    def update_task(self, task_id, title=None, description=None, deadline=None, priority=None, project=None):
         update_query = 'UPDATE tasks SET '
         updates = []
         values = []
@@ -74,6 +84,9 @@ class TaskManager:
             TaskManager.__validate_priority(priority)
             updates.append('priority = ?')
             values.append(priority.name)
+        if project:
+            updates.append('project = ?')
+            values.append(project)
 
         update_query += ', '.join(updates) + ' WHERE id = ?'
         values.append(task_id)
@@ -86,6 +99,11 @@ class TaskManager:
         cursor = self.conn.cursor()
         cursor.execute('DELETE FROM tasks WHERE id = ?', (task_id,))
         self.conn.commit()
+
+    def get_projects(self):
+        cursor = self.conn.cursor()
+        cursor.execute('SELECT DISTINCT project FROM tasks ORDER BY project ASC')
+        return [project[0] for project in cursor.fetchall()]
 
     @staticmethod
     def get_instance():

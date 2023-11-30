@@ -12,38 +12,54 @@
 <div class="container">
     <h1 class="my-3">Task List</h1>
 
-    <form action="/tasks" method="GET" id="sorting-form" class="row g-3 my-3">
-        <label for="sort_by" class="col-auto col-form-label">Sort By</label>
-        <div class="col">
-            <select id="sort_by" name="sort_by" class="form-select">
-                <option value="id" {% if request.args.get('sort_by') == 'id' %}selected{% endif %}>
-                    ID
-                </option>
-                <option value="title" {% if request.args.get('sort_by') == 'title' %}selected{% endif %}>
-                    Title
-                </option>
-                <option value="deadline" {% if request.args.get('sort_by') == 'deadline' %}selected{% endif %}>
-                    Deadline
-                </option>
-                <option value="priority" {% if request.args.get('sort_by') == 'priority' %}selected{% endif %}>
-                    Priority
-                </option>
-            </select>
+    <form action="/tasks" method="GET" id="sorting-form">
+        <div class="row g-3 my-3">
+            <label for="sort_by" class="col-auto col-form-label">Sort By</label>
+            <div class="col">
+                <select id="sort_by" name="sort_by" class="form-select">
+                    <option value="id" {% if request.args.get('sort_by') == 'id' %}selected{% endif %}>
+                        ID
+                    </option>
+                    <option value="title" {% if request.args.get('sort_by') == 'title' %}selected{% endif %}>
+                        Title
+                    </option>
+                    <option value="deadline" {% if request.args.get('sort_by') == 'deadline' %}selected{% endif %}>
+                        Deadline
+                    </option>
+                    <option value="priority" {% if request.args.get('sort_by') == 'priority' %}selected{% endif %}>
+                        Priority
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-auto">
+                <div class="btn-group" role="group">
+                    <input type="radio" class="btn-check"
+                           name="order" value="ASC"
+                           id="asc-radio" autocomplete="off"
+                           {% if request.args.get('order') != 'DESC' %}checked{% endif %}>
+                    <label class="btn btn-outline-primary" for="asc-radio">Ascending</label>
+
+                    <input type="radio" class="btn-check"
+                           name="order" value="DESC"
+                           id="desc-radio" autocomplete="off"
+                           {% if request.args.get('order') == 'DESC' %}checked{% endif %}>
+                    <label class="btn btn-outline-primary" for="desc-radio">Descending</label>
+                </div>
+            </div>
         </div>
 
-        <div class="col-auto">
-            <div class="btn-group" role="group">
-                <input type="radio" class="btn-check"
-                       name="order" value="ASC"
-                       id="asc-radio" autocomplete="off"
-                       {% if request.args.get('order') != 'DESC' %}checked{% endif %}>
-                <label class="btn btn-outline-primary" for="asc-radio">Ascending</label>
-
-                <input type="radio" class="btn-check"
-                       name="order" value="DESC"
-                       id="desc-radio" autocomplete="off"
-                       {% if request.args.get('order') == 'DESC' %}checked{% endif %}>
-                <label class="btn btn-outline-primary" for="desc-radio">Descending</label>
+        <div class="row g-3 mb-3">
+            <label for="project" class="col-auto col-form-label">Project</label>
+            <div class="col">
+                <select id="project" name="project" class="form-select">
+                    {% for project in projects %}
+                        <option value="{{ project }}"
+                                {% if request.args.get('project') == project %}selected{% endif %}>
+                            {{ project if project else 'Any' }}
+                        </option>
+                    {% endfor %}
+                </select>
             </div>
         </div>
     </form>
@@ -66,7 +82,7 @@
                 <td>{{ task[1] }}</td>
                 <td>{{ task[2] }}</td>
                 <td>{{ task[3] }}</td>
-                <td>{{ task[4] }}</td>
+                <td>{{ task[4].capitalize() }}</td>
                 <td>
                     <div class="btn-group" role="group">
                         <form action="/update_task/{{ task[0] }}" method="GET">

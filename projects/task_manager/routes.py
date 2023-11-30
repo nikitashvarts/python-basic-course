@@ -9,10 +9,13 @@ tasks_bp = Blueprint('tasks', __name__, template_folder='templates')
 def show_tasks():
     sort_by = request.args.get('sort_by', 'id')
     order = request.args.get('order', 'ASC')
+    project = request.args.get('project')
 
     task_manager = TaskManager.get_instance()
-    tasks = task_manager.get_tasks(sort_by, order)
-    return render_template('task_list.html', tasks=tasks)
+    tasks = task_manager.get_tasks(sort_by, order, project)
+    projects = task_manager.get_projects()
+
+    return render_template('task_list.html', tasks=tasks, projects=projects)
 
 
 @tasks_bp.route('/add_task', methods=['GET', 'POST'])
@@ -22,9 +25,10 @@ def add_task():
         description = request.form['description']
         deadline = request.form['deadline']
         priority = TaskPriority[request.form['priority']]
+        project = request.form['project']
 
         task_manager = TaskManager.get_instance()
-        task_manager.add_task(title, description, deadline, priority)
+        task_manager.add_task(title, description, deadline, priority, project)
         return redirect(url_for('.show_tasks'))
     return render_template('task_form.html')
 
@@ -41,8 +45,9 @@ def update_task(task_id):
         description = request.form['description']
         deadline = request.form['deadline']
         priority = TaskPriority[request.form['priority']]
+        project = request.form['project']
 
-        task_manager.update_task(task_id, title, description, deadline, priority)
+        task_manager.update_task(task_id, title, description, deadline, priority, project)
         return redirect(url_for('.show_tasks'))
 
     return render_template('task_form.html', task=task)

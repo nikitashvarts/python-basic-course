@@ -41,9 +41,14 @@ class TaskManager:
         ''', (title, description, deadline, priority.name))
         self.conn.commit()
 
-    def get_tasks(self):
+    def get_tasks(self, sort_by, order):
+        if sort_by not in ('id', 'title', 'deadline', 'priority'):
+            sort_by = 'id'
+        if order not in ('ASC', 'DESC'):
+            order = 'ASC'
+
         cursor = self.conn.cursor()
-        cursor.execute('SELECT * FROM tasks')
+        cursor.execute(f'SELECT * FROM tasks ORDER BY {sort_by} {order}')
         return cursor.fetchall()
 
     def get_task_by_id(self, task_id):

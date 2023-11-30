@@ -7,8 +7,11 @@ tasks_bp = Blueprint('tasks', __name__, template_folder='templates')
 @tasks_bp.route('/')
 @tasks_bp.route('/tasks')
 def show_tasks():
+    sort_by = request.args.get('sort_by', 'id')
+    order = request.args.get('order', 'ASC')
+
     task_manager = TaskManager.get_instance()
-    tasks = task_manager.get_tasks()
+    tasks = task_manager.get_tasks(sort_by, order)
     return render_template('task_list.html', tasks=tasks)
 
 

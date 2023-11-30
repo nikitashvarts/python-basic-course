@@ -23,6 +23,9 @@
                     <option value="title" {% if request.args.get('sort_by') == 'title' %}selected{% endif %}>
                         Title
                     </option>
+                    <option value="description" {% if request.args.get('sort_by') == 'description' %}selected{% endif %}>
+                        Description
+                    </option>
                     <option value="deadline" {% if request.args.get('sort_by') == 'deadline' %}selected{% endif %}>
                         Deadline
                     </option>
@@ -98,7 +101,27 @@
         {% endfor %}
         </tbody>
     </table>
-    <a href="/add_task" class="btn btn-primary my-3">Add Task</a>
+
+    <div class="mb-5 row">
+        <div class="col-auto">
+            <a href="/add_task" class="btn btn-primary">Add Task</a>
+        </div>
+        <div class="col-auto">
+            <a href="/download_csv" class="btn btn-secondary">Export Tasks</a>
+        </div>
+    </div>
+
+    <form action="/upload_csv" method="POST" enctype="multipart/form-data">
+        <div class="mb-3 row">
+            <label for="csv_file" class="form-label">Import Tasks from CSV</label>
+            <div class="col-auto">
+                <input type="file" class="form-control" id="csv_file" name="csv_file" accept="text/csv">
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-secondary" id="csv_submit" disabled>Import Tasks</button>
+            </div>
+        </div>
+    </form>
 </div>
 
 <script>
@@ -110,6 +133,12 @@
                 event.preventDefault();
                 form.submit();
             }
+        });
+
+        const fileInput = document.getElementById('csv_file');
+        const submitBtn = document.getElementById('csv_submit');
+        fileInput.addEventListener('change', () => {
+            submitBtn.disabled = fileInput.files.length === 0;
         });
     });
 </script>

@@ -43,7 +43,7 @@ class TaskManager:
         self.conn.commit()
 
     def get_tasks(self, sort_by, order, project):
-        if sort_by not in ('id', 'title', 'deadline', 'priority'):
+        if sort_by not in ('id', 'title', 'description', 'deadline', 'priority'):
             sort_by = 'id'
         if order not in ('ASC', 'DESC'):
             order = 'ASC'

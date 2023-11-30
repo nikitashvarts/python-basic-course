@@ -1,5 +1,10 @@
-from db import TaskManager, TaskPriority
-from flask import Blueprint, render_template, request, redirect, url_for
+import os
+import sys
+from tempfile import gettempdir
+
+from managers.csv_manager import CSVManager
+from managers.task_manager import TaskManager, TaskPriority
+from flask import Blueprint, render_template, request, redirect, url_for, send_file, after_this_request
 
 tasks_bp = Blueprint('tasks', __name__, template_folder='templates')
 
@@ -58,3 +63,49 @@ def delete_task(task_id):
     task_manager = TaskManager.get_instance()
     task_manager.delete_task(task_id)
     return redirect(url_for('.show_tasks'))
+
+
+@tasks_bp.route('/upload_csv', methods=['POST'])
+def upload_csv():
+    if 'csv_file' not in request.files:
+        return 'No file part', 400
+
+    csv_file = request.files['csv_file']
+
+    if csv_file.filename == '':
+        return 'No file selected', 400
+
+    if csv_file and csv_file.filename.endswith('.csv'):
+        try:
+            file_path = os.path.join(gettempdir(), csv_file.filename)
+            csv_file.save(file_path)
+
+            csv_manager = CSVManager()
+            csv_manager.import_tasks(file_path)
+            os.remove(file_path)
+        except Exception:
+            return 'Failed to import the CSV file, try uploading another one', 400
+
+        return redirect(url_for('.show_tasks'))
+
+    return 'Invalid file format, please upload a CSV file', 400
+
+
+@tasks_bp.route('/download_csv')
+def download_csv():
+    try:
+        csv_manager = CSVManager()
+        file_path = os.path.join(gettempdir(), 'tasks_export.csv')
+        csv_manager.export_tasks(file_path)
+    except Exception:
+        return 'Failed to export tasks to a CSV file', 400
+
+    @after_this_request
+    def remove_file(response):
+        try:
+            os.remove(file_path)
+        except OSError as err:
+            print(f'Failed to remove the exported CSV file: {err}', file=sys.stderr)
+        return response
+
+    return send_file(file_path, as_attachment=True, mimetype='text/csv')
